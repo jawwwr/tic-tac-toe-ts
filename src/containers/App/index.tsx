@@ -21,7 +21,7 @@ const Game = () => {
 
     if (winner) {
       setStatus(`Winner: ${winner}`);
-    } else if (!winner && history.length === 10) {
+    } else if (!winner && step_number === 9) {
       setStatus('Game Over! No winner.');
     } else {
       setStatus(`Next player: ${x_is_next ? 'X' : 'O'}`);
@@ -29,8 +29,8 @@ const Game = () => {
   }, [history, step_number, x_is_next]);
 
   const handleClick = (i: number) => {
-    const copy_history = [...history];
-    const squares = copy_history[copy_history.length - 1].squares.slice();
+    const copy_history = history.slice(0, step_number + 1);
+    const squares = [...copy_history[copy_history.length - 1].squares];
 
     if (calculateWinner(squares) || squares[i]) {
       return;
