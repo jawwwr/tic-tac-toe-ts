@@ -1,30 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import Board from 'components/Board ';
-import calculateWinner from 'helpers/calculate-wiiner';
+import Board from 'components/Board';
+import Toggle from 'components/Toggle';
+import MovesList from 'components/MovesList';
+import { calculateWinner } from 'helpers';
 import './styles.scss';
 
 const default_history = [
   {
-    squares: Array(9).fill(null)
+    squares: Array(9).fill(null),
+    position: 0
   }
 ];
 
-const Game = () => {
+const App = () => {
   const [step_number, setStepNumber] = useState(0);
   const [x_is_next, setXIsNext] = useState(true);
   const [status, setStatus] = useState(`Next player: ${x_is_next ? 'X' : 'O'}`);
   const [history, setHistory] = useState(default_history);
+  const [winner, setWinner] = useState([] as number[]);
+  const [toggle_sort, setToggleSort] = useState(false);
+  const [current_squares, setCurrentSquares] = useState([] as number[]);
 
   useEffect(() => {
-    const current = history[step_number];
-    const winner = calculateWinner(current.squares);
+    const { squares } = history[step_number];
+    setCurrentSquares(squares);
 
-    if (winner) {
-      setStatus(`Winner: ${winner}`);
-    } else if (!winner && step_number === 9) {
-      setStatus('Game Over! No winner.');
+    const winner_result = calculateWinner(squares);
+
+    if (winner_result.game_done) {
+      setStatus(`Winner: ${winner_result.name}`);
+      setWinner(winner_result.lines);
+    } else if (!winner_result.game_done && step_number === 9) {
+      setStatus('Game Over: Draw!');
     } else {
       setStatus(`Next player: ${x_is_next ? 'X' : 'O'}`);
+      setWinner([]);
     }
   }, [history, step_number, x_is_next]);
 
@@ -32,7 +42,7 @@ const Game = () => {
     const copy_history = history.slice(0, step_number + 1);
     const squares = [...copy_history[copy_history.length - 1].squares];
 
-    if (calculateWinner(squares) || squares[i]) {
+    if (winner.length || squares[i]) {
       return;
     }
 
@@ -41,15 +51,15 @@ const Game = () => {
     setHistory(
       copy_history.concat([
         {
-          squares
+          squares,
+          position: i
         }
       ])
     );
+
     setXIsNext(!x_is_next);
     setStepNumber(copy_history.length);
   };
-
-  const current = history[step_number];
 
   const jumpTo = (move: number) => {
     if (!move) {
@@ -59,29 +69,31 @@ const Game = () => {
     setXIsNext(move % 2 === 0);
   };
 
-  const moves = history.map((step, move) => {
-    const desc = move ? `Go to move # ${move}` : 'Go to game start';
-    return (
-      // eslint-disable-next-line react/no-array-index-key
-      <li key={move}>
-        <button type="button" onClick={() => jumpTo(move)}>
-          {desc}
-        </button>
-      </li>
-    );
-  });
-
   return (
     <div className="game">
-      <div className="game-board">
-        <Board squares={current.squares} onClick={(i: number) => handleClick(i)} />
+      <div className="game-detail board">
+        <div className="board-container">
+          <Board
+            squares={current_squares}
+            winner={winner}
+            onClick={(i: number) => handleClick(i)}
+          />
+        </div>
       </div>
-      <div className="game-info">
+      <div className="game-detail info">
         <div>{status}</div>
-        <ol>{moves}</ol>
+        <div className="action">
+          <Toggle checked={toggle_sort} onClick={() => setToggleSort(!toggle_sort)} />
+        </div>
+        <MovesList
+          toggle_sort={toggle_sort}
+          history={history}
+          step_number={step_number}
+          onClick={jumpTo}
+        />
       </div>
     </div>
   );
 };
 
-export default Game;
+export default App;
