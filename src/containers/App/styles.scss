@@ -1,46 +1,75 @@
-ol,
-ul {
-  padding-left: 30px;
-}
-
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
-}
-
-.status {
-  margin-bottom: 10px;
-}
-
-.square {
-  background: #fff;
-  border: 1px solid #999;
-  float: left;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 34px;
-}
-
-.square:focus {
-  outline: none;
-}
-
-.kbd-navigation .square:focus {
-  background: #ddd;
-}
-
 .game {
   display: flex;
   flex-direction: row;
-}
-
-.game-info {
-  margin-left: 20px;
+  .game-detail {
+    display: flex;
+    width: 100%;
+    margin: 1rem 2rem;
+    &.board {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 25rem;
+      .board-container {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 16rem;
+        height: 12rem;
+        .square {
+          flex: 1 0 33%;
+          background: #fff;
+          height: 6rem;
+          min-width: 2rem;
+          border: 1px solid #999;
+          font-size: 24px;
+          font-weight: bold;
+          line-height: 34px;
+          margin-right: -1px;
+          margin-top: -1px;
+          padding: 0;
+          text-align: center;
+          &.hightlight {
+            background-color: #f9bc05;
+            color: #ffffff;
+          }
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+    &.info {
+      flex-direction: column;
+      ol {
+        padding-left: 1rem;
+        li {
+          margin: 0.2rem 0;
+        }
+      }
+      .action {
+        margin-top: 1rem;
+      }
+      .moves-list {
+        display: flex;
+        flex-direction: column;
+        &.reverse {
+          flex-direction: column-reverse;
+        }
+        button {
+          cursor: pointer;
+          border: none;
+          padding: 0.3rem 1rem;
+          width: 13rem;
+          height: 3rem;
+          background-color: #4285f4;
+          color: #f1f1f1;
+          text-align: left;
+          white-space: pre;
+          &.active {
+            background-color: #ea4335;
+          }
+        }
+      }
+    }
+  }
 }
